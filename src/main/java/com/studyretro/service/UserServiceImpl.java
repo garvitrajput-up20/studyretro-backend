@@ -1,5 +1,6 @@
 package com.studyretro.service;
 
+import com.studyretro.dto.LoginDto;
 import com.studyretro.entity.Users;
 import com.studyretro.exceptions.InvalidUserException;
 import com.studyretro.repository.UserRepository;
@@ -8,6 +9,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -16,6 +18,9 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final DataValidator dataValidator;
     private final PasswordEncryptionService encryptionService;
+
+    private final JwtService jwtService;
+
 
     @Override
     public Users registerUser(Users users) {
@@ -41,6 +46,17 @@ public class UserServiceImpl implements UserService {
         return userRepository.save(users);
     }
 
+    public String login(LoginDto loginDto){
+        Optional<Users> users = userRepository.findByEmail(loginDto.getEmail());
+        if(users.isPresent()){
+            Users user = users.get();
+            if(encryptionService.verifyPassword(loginDto.getPassword(), user.getPassword())){
+                return jwtService.generateJWT(user);
+            }
+        }
+        return "Not Authenticated";
+    }
+
     @Override
     public List<?> getUsers(Users users) {
         return userRepository.findAll();
@@ -62,5 +78,4 @@ public class UserServiceImpl implements UserService {
     public boolean phoneExist(String phone) {
         return userRepository.findByPhone(phone).isPresent();
     }
-
 }

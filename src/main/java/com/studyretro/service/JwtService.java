@@ -4,9 +4,11 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.studyretro.entity.Users;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 import java.util.Date;
 
+@Service
 public class JwtService {
     @Value("${jwt.algorithm.key}")
     private String algorithmKey;
@@ -27,7 +29,7 @@ public class JwtService {
                 .sign(algorithm);
     }
 
-    public String getUsername(String token) {
+    public String getEmail(String token) {
         return JWT.decode(token).getClaim(EMAIL_KEY).asString();
     }
 }
