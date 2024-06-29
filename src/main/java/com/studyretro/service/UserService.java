@@ -8,7 +8,7 @@ public interface UserService {
 
     public Users registerUser(Users users);
 
-    public List getUsers(Users users);
+    public List<?> getUsers(Users users);
 
     public Users updateUsers(Users users);
 
