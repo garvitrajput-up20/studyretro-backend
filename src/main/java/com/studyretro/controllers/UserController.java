@@ -24,7 +24,7 @@ public class UserController {
         return ResponseEntity.ok().body("User Registered");
     }
 
-    @GetMapping("/findall")
+    @GetMapping("/findAllUsers")
    // @PreAuthorize("hasRole('ADMIN')")
     public List<?> getAll(Users users){
         return userService.getUsers(users);
