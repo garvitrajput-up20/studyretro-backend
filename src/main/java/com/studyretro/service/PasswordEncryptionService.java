@@ -23,5 +23,4 @@ public class PasswordEncryptionService {
     public Boolean verifyPassword(String password, String hash) {
         return BCrypt.checkpw(password, hash);
     }
-
 }
