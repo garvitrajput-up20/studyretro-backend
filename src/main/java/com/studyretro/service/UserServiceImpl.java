@@ -15,7 +15,7 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final DataValidator dataValidator;
-
+    private final PasswordEncryptionService encryptionService;
 
     @Override
     public Users registerUser(Users users) {
@@ -37,6 +37,7 @@ public class UserServiceImpl implements UserService {
         if (!dataValidator.validatePassword(users.getPassword())) {
             throw new InvalidUserException("Invalid Password Format.");
         }
+        users.setPassword(encryptionService.encryptPassword(users.getPassword()));
         return userRepository.save(users);
     }
 
