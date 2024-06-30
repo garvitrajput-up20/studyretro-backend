@@ -13,6 +13,8 @@ public interface UserService {
 
     public Users updateUsers(Users users);
 
+    public String delete();
+
     public boolean emailExist(String email);
 
     public boolean phoneExist(String phone);

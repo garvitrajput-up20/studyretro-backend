@@ -44,6 +44,11 @@ public class UserController {
         return ResponseEntity.ok().body(result);
     }
 
+    @PostMapping("/deleteAllUsers")
+    public String delete() {
+        userService.delete();
+        return "Deleted";
+    }
     @GetMapping("/findAllUsers")
     public List<?> getAll(Users users){
         return userService.getUsers(users);
