@@ -27,7 +27,6 @@ public class EmailServiceImpl implements EmailService {
     @Autowired
     private OtpInfoRepository otpInfoRepository;
 
-
     @Async
     @Override
     public CompletableFuture<Void> sendEmail(String to, String subject, String text) {
@@ -35,7 +34,44 @@ public class EmailServiceImpl implements EmailService {
 
         try {
             String otp = OtpUtil.generateOtp();
-            text = "Your OTP to verify the email is: " + otp;
+
+            // HTML template with the OTP inserted
+            String htmlTemplate = "<!DOCTYPE html>" +
+                    "<html lang=\"en\">" +
+                    "<head>" +
+                    "    <meta charset=\"UTF-8\">" +
+                    "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">" +
+                    "    <title>OTP Verification</title>" +
+                    "    <style>" +
+                    "        body { font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0; }" +
+                    "        .container { width: 100%; padding: 20px; background-color: #ffffff; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); margin: 20px auto; max-width: 600px; border-radius: 8px; }" +
+                    "        .header { text-align: center; padding: 10px 0; border-bottom: 1px solid #dddddd; }" +
+                    "        .header h1 { margin: 0; color: #333333; }" +
+                    "        .content { padding: 20px; text-align: center; }" +
+                    "        .content p { font-size: 16px; color: #666666; }" +
+                    "        .otp { font-size: 24px; font-weight: bold; color: #333333; margin: 20px 0; }" +
+                    "        .footer { text-align: center; padding: 10px 0; border-top: 1px solid #dddddd; margin-top: 20px; }" +
+                    "        .footer p { font-size: 12px; color: #999999; }" +
+                    "    </style>" +
+                    "</head>" +
+                    "<body>" +
+                    "    <div class=\"container\">" +
+                    "        <div class=\"header\">" +
+                    "            <h1>Email Verification</h1>" +
+                    "        </div>" +
+                    "        <div class=\"content\">" +
+                    "            <p>Dear User,</p>" +
+                    "            <p>Thank you for registering with us. To complete your registration, please use the following One-Time Password (OTP) to verify your email address:</p>" +
+                    "            <div class=\"otp\">" + otp + "</div>" +
+                    "            <p>This OTP is valid for 5 minutes. If you did not request this verification, please ignore this email.</p>" +
+                    "            <p>Best regards,<br>StudyRetro</p>" +
+                    "        </div>" +
+                    "        <div class=\"footer\">" +
+                    "            <p>&copy; 2024 Your Company Name. All rights reserved.</p>" +
+                    "        </div>" +
+                    "    </div>" +
+                    "</body>" +
+                    "</html>";
 
             OtpInfo otpInfo = new OtpInfo();
             otpInfo.setEmail(to);
@@ -47,7 +83,7 @@ public class EmailServiceImpl implements EmailService {
             MimeMessageHelper helper = new MimeMessageHelper(message, true);
             helper.setTo(to);
             helper.setSubject(subject);
-            helper.setText(text, true);
+            helper.setText(htmlTemplate, true); // true indicates the content is HTML
             mailSender.send(message);
 
             log.info("Sent email to {}", to);
