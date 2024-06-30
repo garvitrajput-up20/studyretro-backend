@@ -37,7 +37,6 @@ public class EmailServiceImpl implements EmailService {
             String otp = OtpUtil.generateOtp();
             text = "Your OTP to verify the email is: " + otp;
 
-            // Store OTP in the database
             OtpInfo otpInfo = new OtpInfo();
             otpInfo.setEmail(to);
             otpInfo.setOtp(otp);
@@ -48,7 +47,7 @@ public class EmailServiceImpl implements EmailService {
             MimeMessageHelper helper = new MimeMessageHelper(message, true);
             helper.setTo(to);
             helper.setSubject(subject);
-            helper.setText(text, true); // Set the second parameter to true to send HTML content
+            helper.setText(text, true);
             mailSender.send(message);
 
             log.info("Sent email to {}", to);

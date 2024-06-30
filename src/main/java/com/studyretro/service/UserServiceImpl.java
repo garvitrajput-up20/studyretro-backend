@@ -15,6 +15,7 @@ import java.util.Optional;
 @Service
 @AllArgsConstructor
 public class UserServiceImpl implements UserService {
+
     private final UserRepository userRepository;
     private final DataValidator dataValidator;
     private final PasswordEncryptionService encryptionService;
@@ -51,6 +52,9 @@ public class UserServiceImpl implements UserService {
         Optional<Users> users = userRepository.findByEmail(loginDto.getEmail());
         if(users.isPresent()){
             Users user = users.get();
+            if(!user.isVerified()) {
+                return "User Not Verified";
+            }
             if(encryptionService.verifyPassword(loginDto.getPassword(), user.getPassword())){
                 return jwtService.generateJWT(user);
             }
@@ -72,7 +76,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Users updateUsers(Users users) {
-
         return null;
     }
 
