@@ -49,4 +49,5 @@ public class OtpServiceImpl implements OtpService {
             throw new InvalidOtpException("User not found for the provided email.");
         }
     }
+
 }

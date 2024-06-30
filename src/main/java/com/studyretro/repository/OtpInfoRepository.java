@@ -11,7 +11,7 @@ import java.util.Optional;
 public interface OtpInfoRepository extends JpaRepository<OtpInfo, Long> {
 
     OtpInfo findByEmailAndOtp(String email, String otp);
-    OtpInfo deleteByEmail(String email);
+    OtpInfo findByEmail(String email);
     int deleteByGeneratedAtBefore(LocalDateTime expiryTime);
 
 }

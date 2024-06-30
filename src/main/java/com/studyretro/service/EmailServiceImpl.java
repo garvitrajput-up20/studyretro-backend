@@ -1,7 +1,9 @@
 package com.studyretro.service;
 
 import com.studyretro.entity.OtpInfo;
+import com.studyretro.entity.Users;
 import com.studyretro.repository.OtpInfoRepository;
+import com.studyretro.repository.UserRepository;
 import com.studyretro.utils.OtpUtil;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -13,8 +15,10 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 @Slf4j
@@ -24,6 +28,9 @@ public class EmailServiceImpl implements EmailService {
 
     @Autowired
     private final JavaMailSender mailSender;
+
+    @Autowired
+    private UserRepository userRepository;
     @Autowired
     private OtpInfoRepository otpInfoRepository;
 
@@ -43,7 +50,7 @@ public class EmailServiceImpl implements EmailService {
                     "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">" +
                     "    <title>OTP Verification</title>" +
                     "    <style>" +
-                    "        body { font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0; }" +
+                    "        body { font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0; border: 1px solid}" +
                     "        .container { width: 100%; padding: 20px; background-color: #ffffff; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); margin: 20px auto; max-width: 600px; border-radius: 8px; }" +
                     "        .header { text-align: center; padding: 10px 0; border-bottom: 1px solid #dddddd; }" +
                     "        .header h1 { margin: 0; color: #333333; }" +
@@ -67,7 +74,7 @@ public class EmailServiceImpl implements EmailService {
                     "            <p>Best regards,<br>StudyRetro</p>" +
                     "        </div>" +
                     "        <div class=\"footer\">" +
-                    "            <p>&copy; 2024 Your Company Name. All rights reserved.</p>" +
+                    "            <p>&copy; 2024 StudyRetro | All rights reserved.</p>" +
                     "        </div>" +
                     "    </div>" +
                     "</body>" +
@@ -96,4 +103,28 @@ public class EmailServiceImpl implements EmailService {
 
         return future;
     }
+
+    @Override
+    @Transactional
+    public boolean resendOtp(String email) {
+        Optional<Users> userOptional = userRepository.findByEmail(email);
+        if (userOptional.isPresent()) {
+            // User exists, delete any existing OTP and resend
+            Optional<OtpInfo> existingOtp = Optional.ofNullable(otpInfoRepository.findByEmail(email));
+            existingOtp.ifPresent(otpInfo -> otpInfoRepository.delete(otpInfo));
+
+            try {
+                sendEmail(email, "Email Verification OTP", "").get();
+                return true;
+            } catch (Exception e) {
+                log.error("Failed to resend OTP to {}", email, e);
+                return false;
+            }
+        } else {
+            // User does not exist
+            log.warn("User with email {} not found. Cannot resend OTP.", email);
+            return false;
+        }
+    }
+
 }

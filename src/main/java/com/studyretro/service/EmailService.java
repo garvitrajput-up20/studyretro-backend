@@ -8,5 +8,6 @@ public interface EmailService {
 
     @Async
     public CompletableFuture<Void> sendEmail(String to, String subject, String text);
+    public boolean resendOtp(String email);
 
 }

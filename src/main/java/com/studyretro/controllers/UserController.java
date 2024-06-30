@@ -53,13 +53,23 @@ public class UserController {
         return ResponseEntity.ok().body(result);
     }
 
+    @PostMapping("/resendOtp")
+    public ResponseEntity<?> resendOtp(@RequestParam String email) {
+        boolean isSent = emailService.resendOtp(email);
+        if (isSent) {
+            return ResponseEntity.ok().body("OTP has been resent. Please check your email.");
+        } else {
+            return ResponseEntity.status(404).body("User with Email "+email+" not found");
+        }
+    }
+
     @PostMapping("/verifyOtp")
     public ResponseEntity<?> verifyOtp(@RequestBody OtpVerificationDto otpVerificationDto) {
         boolean isVerified = otpVerificationService.validateOTP(otpVerificationDto.getEmail(), otpVerificationDto.getOtp());
         if (isVerified) {
             return ResponseEntity.ok().body("OTP Verified. User is now verified.");
         } else {
-            return ResponseEntity.status(400).body("Invalid OTP");
+            return ResponseEntity.status(400).body("Invalid OTP, Kindly wait for 5 minutes before resending OTP");
         }
     }
 
