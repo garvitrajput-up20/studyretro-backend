@@ -2,6 +2,7 @@ package com.studyretro.controllers;
 
 import com.studyretro.dto.LoginDto;
 import com.studyretro.entity.Users;
+import com.studyretro.service.EmailService;
 import com.studyretro.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @RestController
 @AllArgsConstructor
@@ -18,10 +20,19 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private EmailService emailService;
+
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody Users user) {
-        Users registerUser = userService.registerUser(user);
-        return ResponseEntity.ok().body("User Registered");
+        Users registeredUser = userService.registerUser(user);
+
+        // Send OTP email
+        String subject = "Email Verification OTP";
+        String text = "";
+        CompletableFuture<Void> emailFuture = emailService.sendEmail(user.getEmail(), subject, text);
+
+        return ResponseEntity.ok().body("User Registered. Please check your email for the OTP.");
     }
 
     @PostMapping("/login")
@@ -34,7 +45,6 @@ public class UserController {
     }
 
     @GetMapping("/findAllUsers")
-   // @PreAuthorize("hasRole('ADMIN')")
     public List<?> getAll(Users users){
         return userService.getUsers(users);
     }

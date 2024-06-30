@@ -9,16 +9,16 @@ import java.util.regex.Pattern;
 @Component
 public class DataValidator {
 
-    @Value("${validation.email}")
+    @Value("${validation.email.regexp}")
     private String EMAIL_PATTERN;
 
     @Value("${validation.name}")
     private String NAME_PATTERN;
 
-    @Value("${validation.phone}")
+    @Value("${validation.phone.regexp}")
     private String PHONE_PATTERN;
 
-    @Value("${validation.password}")
+    @Value("${validation.password.regexp}")
     private String PASSWORD_PATTERN;
 
     public boolean validateEmail(String email) {

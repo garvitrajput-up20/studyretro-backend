@@ -29,4 +29,6 @@ public class Users {
     private Role role;
 
     private String password;
+
+    private boolean isVerified;
 }
