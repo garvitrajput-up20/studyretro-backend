@@ -1,5 +1,7 @@
 package com.studyretro.entity;
 
+import com.studyretro.enums.BookCategory;
+import com.studyretro.enums.BookCondition;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -25,7 +27,13 @@ public class Books {
 
     private Double price;
 
-    private String condition;
+    private BookCondition condition;
+
+    private BookCategory category;
+
+    private String publisher;
+
+    private int quantity;
 
     private String description;
 }
